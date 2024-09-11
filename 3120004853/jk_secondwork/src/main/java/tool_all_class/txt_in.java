@@ -23,8 +23,7 @@ public class txt_in {
             reader.close();
             file_input.close();
         } catch (IOException e) {
-            System.out.println("文件路径出错");
-            e.printStackTrace();//打印问题
+            System.out.println("读取文件路径出错");
         }
         return str;
     }
@@ -38,7 +37,7 @@ public class txt_in {
             filewriter.write("\r\n");
             filewriter.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("文件路径有误！未找到指定文件写入");
         }
 
     }

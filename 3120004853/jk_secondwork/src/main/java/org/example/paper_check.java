@@ -16,6 +16,6 @@ public class paper_check {
         System.out.println(simhash2);
         double similar_number=hanming_bijiao.similar_number(simhash1,simhash2);
         txt_in.writeTxt(similar_number,result);
-        System.out.println(similar_number);
+        System.out.println("重复率为"+similar_number);
     }
 }

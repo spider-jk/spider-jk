@@ -13,7 +13,6 @@ public class haiming_test {
         String str1 = txt_in.readTxt("E:\\jk_java\\jk_secondwork_file\\orig_0.8_add.txt");
         int distance = hanming_bijiao.getdistance(simhash_tranlate.getsimhash_number(str0), simhash_tranlate.getsimhash_number(str1));
         System.out.println("海明距离：" + distance);
-        System.out.println("相似度: " + (100 - (double)distance * 100 / 256) + "%");
     }
 
     @Test
@@ -30,7 +29,6 @@ public class haiming_test {
         String str1 = txt_in.readTxt("E:\\jk_java\\jk_secondwork_file\\orig_0.8_add.txt");
         int distance = hanming_bijiao.getdistance(simhash_tranlate.getsimhash_number(str0), simhash_tranlate.getsimhash_number(str1));
         double similarity = hanming_bijiao.similar_number(simhash_tranlate.getsimhash_number(str0), simhash_tranlate.getsimhash_number(str1));
-        System.out.println("str0和str1的汉明距离: " + distance);
         System.out.println("str0和str1的相似度:" + similarity);
     }
 

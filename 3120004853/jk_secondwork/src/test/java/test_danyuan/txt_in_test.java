@@ -7,13 +7,12 @@ public class txt_in_test {
     @Test
     public void readTxtTest() {
         // 路径存在，正常读取
-        String str = txt_in.readTxt("E:\\jk_java\\jk_secondwork_file\\orig.txt");
+        String str = txt_in.readTxt("E:\\jk_java\\jk_secondwork_file\\test_work.txt");
         String[] strings = str.split(" ");
         for (String string : strings) {
             System.out.println(string);
         }
     }
-
     @Test
     public void writeTxtTest() {
         // 路径存在，正常写入
@@ -21,14 +20,13 @@ public class txt_in_test {
         for (int i = 0; i < elem.length; i++) {
             txt_in.writeTxt(elem[i], "E:\\jk_java\\jk_secondwork_file\\test.txt");
         }
+        System.out.println("正常写入了");
     }
-
     @Test
     public void readTxtFailTest() {
         // 路径不存在，读取失败
         String str = txt_in.readTxt("D:/test/none.txt");
     }
-
     @Test
     public void writeTxtFailTest() {
         // 路径错误，写入失败

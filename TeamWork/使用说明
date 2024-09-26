@@ -1,1 +1,5 @@
-你好
+具体可看博客有详细描述：https://www.cnblogs.com/zhangjkisme/p/18429376
+第五次提交也上传了jar包
+然后jar的使用有两种命令：
+①java -jar mathgenerator.jar -n 10 -r 10 这种是生成表达式10道 操作数范围为10以内
+②java -jar mathgenerator.jar -e Exercises.txt -a answers_test.txt这是答案检查 Exercises.txt是题目，answers_test.txt是需要检查的答案

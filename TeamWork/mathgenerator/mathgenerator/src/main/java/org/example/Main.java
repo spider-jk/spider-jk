@@ -1,13 +1,9 @@
 package org.example;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-    public static Set<String> resultSet = new HashSet<>();//用来筛选是否重复
     private static final String exercisesFilePath = "Exercises.txt";//题目文件
     private static final String answersFilePath = "Answers.txt";//答案文件
 
@@ -23,26 +19,25 @@ public class Main {
         }
     }
     public static void run(String[] args) throws IOException {
-        int num = 0;
+        int number = 0;
         int max = 0;
-        String exerciseFile = null;
-        String answerFile = null;
-
+        String exercises_file = null;
+        String answer_file = null;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-e")) {
                 if (i + 1 < args.length) {
-                    exerciseFile = args[i + 1];
+                    exercises_file = args[i + 1];
                 }
             }
             if (args[i].equals("-a")) {
                 if (i + 1 < args.length) {
-                    answerFile = args[i + 1];
+                    answer_file = args[i + 1];
                 }
             }
             if (args[i].equals("-n")) {
                 if (i + 1 < args.length) {
-                    num = Integer.parseInt(args[i + 1]);
-                    if (num <= 0) throw new RuntimeException("请求的表达式数量过少");
+                    number = Integer.parseInt(args[i + 1]);
+                    if (number <= 0) throw new RuntimeException("请求的表达式数量过少");
                 }
             }
             if (args[i].equals("-r")) {
@@ -51,30 +46,34 @@ public class Main {
                     if (max <= 0) throw new RuntimeException("操作数范围设置小于零");
                 }
             }
-
         }
-
-        if (num != 0 && max == 0) max = 10; // 只要求生成题目时，最大范围为10
-        if (num == 0 && max != 0) num = 10; // 只要求题目范围时，则生成10道题目
-        if (num != 0 && max != 0) generate(num, max);//生成
-        if (exerciseFile != null && answerFile != null) judge(exerciseFile, answerFile);//判断
-        if (num == 0 && max == 0 && exerciseFile == null && answerFile == null)
+        if (number != 0 && max == 0) max = 10; // 只要求生成题目时，最大范围为10
+        if (number == 0 && max != 0) number = 10; // 只要求题目范围时，则生成10道题目
+        if (number != 0 && max != 0) generate(number, max);//生成表达式
+        if (exercises_file != null && answer_file != null) judge(exercises_file, answer_file);//判断答案
+        if (number == 0 && max == 0 && exercises_file == null && answer_file == null)
             throw new RuntimeException("输入的参数格式不符合题目要求");
     }
 
-    private static void generate(int num, int max) throws IOException {
+    public static void generate(int num, int max) throws IOException {
         int i = 0;
+        String[]result2=new String[num];
+        for (int m =0;m<num;m++){
+            result2[m]="-1";
+
+        }
         file_work.ClearFile(exercisesFilePath);//先清空
         file_work.ClearFile(answersFilePath);
+        System.out.println("生成中...请稍后");
         while (i < num) {
             int numSymbol = (int) (Math.random() * 3 + 1); // 随机生成1-3个运算符
             Equation_p_c equation = new Equation_p_c(numSymbol, max); // 生成表达式
             // 检查表达式是否有效
             if (!isValidEquation(equation)) continue;//即结果不为0
             String result = equation.getResult().toString();
-            if (!resultSet.isEmpty() && resultSet.contains(result))//判断等式是否有重复性，如果则有重新生成
-                continue;
-            resultSet.add(result); // 记录结果，防止重复
+            if (result2[0]!="-1"&&!isPass(equation,result2,result)) {//判断结果有无重复，如果有重复就把重复的式子进行操作数比对，如果都相同才重新生成
+                System.out.println("重新生成"); continue;}
+            result2[i]=result;
             String question = (i + 1) + ". " + equation.getInfixExpression() + "=";
             result = (i + 1) + ". " + result;
             file_work.WriteFile(exercisesFilePath, question); // 将题目写入文件
@@ -84,13 +83,70 @@ public class Main {
         System.out.println("生成"+num+"道操作数范围在"+max+"内的四则运算式完毕，已存入目标文件"+exercisesFilePath+"中。");
     }
 
-    private static boolean isValidEquation(Equation_p_c equation) {
+    public static boolean isValidEquation(Equation_p_c equation) {
         // 检查结果是否相等于表达式
         if (equation.getResult().toString().equals("0")) return false; // 不允许结果为0
         return true;
     }
-
-    private static void judge(String exercises, String answers) throws IOException {//判断对错
+    private static boolean isPass(Equation_p_c equation,String[]results2,String result){//找重复结果的式子角标
+        int pointer=0;//用于寻找重复的指针
+        int pointer2=0;//repeat重复数目的指针
+        int[]repeat=new int[results2.length];
+        for (int j=0;j<repeat.length;j++){
+            repeat[j]=0;
+        }
+        while(results2[pointer]!="-1"){//如果指向的已经到题目上限了就跳出循环
+            if (results2[pointer].equals(result)){
+                repeat[pointer2]=pointer+1;
+                pointer2++;
+            }
+            pointer++;
+        }
+        if (pointer2==0) return true;//如果没有重复，就直接过
+        if(pointer2!=0){
+            for (int j=0;j<pointer2;j++){//对重复的式子进行下一步操作数比对
+                if (isSame(equation,repeat[j])) return false;
+            }
+        }
+        return true;
+    }
+    private static boolean isSame(Equation_p_c equantion,int pointer2){//对重复的式子进行操作数比对
+        File file=new File(exercisesFilePath);
+        String repeat_line;//用来存放之前结果重复的式子
+        try {
+            LineNumberReader lnr=new LineNumberReader(new FileReader(file));
+            while((repeat_line = lnr.readLine()) != null){
+                if(lnr.getLineNumber()==pointer2){//根据角标读取式子
+                    break;
+                }
+            }
+            int index = repeat_line.indexOf(".");
+            repeat_line = repeat_line.substring(index + 1, repeat_line.length() - 1);//将题号删除
+            String[]repeat_equantion=repeat_line.split("(?=[+\\-×÷()])|(?<=[+\\-×÷()])");//下面这几句是用来筛选出两个式子中的操作数并装入字符串数组中
+            String[]equantion_now=equantion.toString().split("(?=[+\\-×÷()])|(?<=[+\\-×÷()])");
+            repeat_equantion= Arrays.stream(repeat_equantion)
+                    .filter(part -> !part.matches("[+\\-×÷()\\s]*"))  // 过滤掉运算符、空格等无效部分
+                    .toArray(String[]::new);
+            equantion_now=Arrays.stream(equantion_now)
+                    .filter(part -> !part.matches("[+\\-×÷()\\s]*"))  // 过滤掉运算符、空格等无效部分
+                    .toArray(String[]::new);
+            if (repeat_equantion.length!=equantion_now.length) return false;
+            for (int q=0;q<equantion_now.length;q++){
+                int biaozhi=0;
+                for (int p=0;p<repeat_equantion.length;p++){
+                    if (!equantion_now[q].equals(repeat_equantion[p])) biaozhi++;
+                }
+                if(biaozhi==equantion_now.length) return false;
+            }
+            lnr.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("判定重复时读取文件失败");
+        } catch (IOException e) {
+            System.out.println("判定重复时读取文件的行数失败");
+        }
+        return true;
+    }
+    public static void judge(String exercises, String answers) throws IOException {//判断对错
         List<String> exerciseList = new ArrayList<>();
         List<String> answerList = new ArrayList<>();
         file_work.ReadFile(exercises, exerciseList); // 读取题目

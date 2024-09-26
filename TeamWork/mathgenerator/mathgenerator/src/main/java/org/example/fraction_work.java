@@ -36,20 +36,20 @@ public class fraction_work {
         this.denominator = denominator;
     }
     //生成真分数
-    public static fraction_work fraction_random(int max){//随机生成真分数或者自然数
+    public static fraction_work fraction_random(int max){//随机生成小于max真分数或者自然数
         int p=(int)(Math.random()*100)+1;
-        if(p<=70){//70%的概率生成整数
-            int numerator=(int)(Math.random()*max);
-            if(numerator==0)
-                numerator=1;//防止生成0
-            return new fraction_work(numerator,1);
+        if(p<=15){//15%的概率生成整数，因为自然数太多了
+            int fenzi=(int)(Math.random()*max);
+            if(fenzi==0)
+                fenzi=1;//防止0的生成
+            return new fraction_work(fenzi,1);
         }
         else{
-            int denominator=(int)(Math.random()*max)+1;
-            if(denominator==max&&denominator!=1)
-                denominator--;//防止超过范围
-            int numerator=(int)(Math.random()*denominator*max)+1;//分子范围在1到分母*max之间
-            return new fraction_work(numerator,denominator);
+            int fenmu=(int)(Math.random()*max)+1;
+            if(fenmu==max&&fenmu!=1)
+                fenmu--;//防止分母超过范围
+            int numerator=(int)(Math.random()*fenmu*max)+1;//分子范围在1到分母*max之间
+            return new fraction_work(numerator,fenmu);
         }
     }
     // 判断分数是否为负数
@@ -123,10 +123,10 @@ public class fraction_work {
         boolean isNegative = (numerator < 0) ^ (denominator < 0);
         numerator = Math.abs(numerator);
         denominator = Math.abs(denominator);
-        int g = gcd(numerator, denominator);  // 使用 gcd 方法化简
+        int g = gcd(numerator, denominator);  // 使用最大公因数的方法化简
         numerator /= g;
         denominator /= g;
-
+        //对于分数的格式输出处理，使得满足题目要求。
         if (numerator < denominator) {
             return (isNegative ? "-" : "") + numerator + "/" + denominator;
         } else {

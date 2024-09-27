@@ -49,6 +49,8 @@ public class fraction_work {
             if(fenmu==max&&fenmu!=1)
                 fenmu--;//防止分母超过范围
             int numerator=(int)(Math.random()*fenmu*max)+1;//分子范围在1到分母*max之间
+            while(fenmu==1&&numerator==max) numerator=(int)(Math.random()*fenmu*max)+1;
+            if (numerator/fenmu==max) return fraction_random(max);//如果生成max则重新生成
             return new fraction_work(numerator,fenmu);
         }
     }
